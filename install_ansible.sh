@@ -19,23 +19,14 @@ if [ ! $(which ansible-playbook) ]; then
     export HTTP_PROXY=http://web-proxy.rose.hpecorp.net:8080
     export HTTPS_PROXY=http://web-proxy.rose.hpecorp.net:8088
 
-    # Install required Python libs and pip
-    # Fix EPEL Metalink SSL error
-    # - workaround: https://community.hpcloud.com/article/centos-63-instance-giving-cannot-retrieve-metalink-repository-epel-error
-    # - SSL secure solution: Update ca-certs!!
-    #   - http://stackoverflow.com/q/26734777/645491#27667111
-    #   - http://serverfault.com/q/637549/77156
-    #   - http://unix.stackexchange.com/a/163368/7688
     yum -y install ca-certificates nss
     yum clean all
     rm -rf /var/cache/yum
     yum_makecache_retry
     yum -y install epel-release
-    # One more time with EPEL to avoid failures
     yum_makecache_retry
 
     yum -y install python-pip PyYAML python-jinja2 python-httplib2 python-keyczar python-paramiko git
-    # If python-pip install failed and setuptools exists, try that
     if [ -z "$(which pip)" -a -z "$(which easy_install)" ]; then
       yum -y install python-setuptools
       easy_install pip
@@ -43,14 +34,12 @@ if [ ! $(which ansible-playbook) ]; then
       easy_install pip
     fi
 
-    # Install passlib for encrypt
     yum -y groupinstall "Development tools"
     yum -y install python-devel MySQL-python sshpass && pip install pyrax pysphere boto passlib dnspython
 
-    # Install Ansible module dependencies
     yum -y install bzip2 file findutils git gzip hg svn sudo tar which unzip xz zip libselinux-python
     [ -n "$(yum search procps-ng)" ] && yum -y install procps-ng || yum -y install procps
-  elif [ -f /etc/debian_version ] || [ grep -qi ubuntu /etc/lsb-release ] || grep -qi ubuntu /etc/os-release; then
+ elif [ -f /etc/debian_version ] || [ grep -qi ubuntu /etc/lsb-release ] || grep -qi ubuntu /etc/os-release; then
     export http_proxy=http://web-proxy.rose.hpecorp.net:8080
     export https_proxy=http://web-proxy.rose.hpecorp.net:8088
 
