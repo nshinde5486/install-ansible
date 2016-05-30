@@ -39,17 +39,11 @@ if [ ! $(which ansible-playbook) ]; then
 
     yum -y install bzip2 file findutils git gzip hg svn sudo tar which unzip xz zip libselinux-python
     [ -n "$(yum search procps-ng)" ] && yum -y install procps-ng || yum -y install procps
- elif [ -f /etc/debian_version ] || [ grep -qi ubuntu /etc/lsb-release ] || grep -qi ubuntu /etc/os-release; then
+  elif [ -f /etc/debian_version ] || [ grep -qi ubuntu /etc/lsb-release ] || grep -qi ubuntu /etc/os-release; then
     export http_proxy=http://web-proxy.rose.hpecorp.net:8080
     export https_proxy=http://web-proxy.rose.hpecorp.net:8088
 
     apt-get update
-    # Install via package
-    # apt-get update && \
-    # apt-get install --no-install-recommends -y software-properties-common && \
-    # apt-add-repository ppa:ansible/ansible && \
-    # apt-get update && \
-    # apt-get install -y ansible
 
     # Install required Python libs and pip
     apt-get install -y  python-pip python-yaml python-jinja2 python-httplib2 python-paramiko python-pkg-resources
@@ -84,11 +78,8 @@ if [ ! $(which ansible-playbook) ]; then
   echo -e '[local]\nlocalhost\n' > /etc/ansible/hosts
 
   # source install to get latest ansible
-  git clone https://github.com/ansible/ansible.git ansible
-  cd ansible/lib/ansible/modules/
-  git clone https://github.com/keinohguchi/ansible-modules-core.git core
+  git clone https://github.com/ansible/ansible.git --recursive --branch stable-2.1
   sudo make install
-  cd ../../../../
   # clone the code to run the tests
   git clone https://github.com/nshinde5486/ansible-openswitch-tests.git
 
@@ -103,6 +94,5 @@ if [ ! $(which ansible-playbook) ]; then
       yum install -y python-crypto python-paramiko
     fi
   fi
-
 fi
 
