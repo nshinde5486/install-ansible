@@ -43,13 +43,7 @@ fi
 
     mkdir /etc/ansible/
     echo -e '[local]\nlocalhost\n' > /etc/ansible/hosts
-    # source install to get latest ansible
-    git clone https://github.com/ansible/ansible.git ansible
-    cd ansible/lib/ansible/modules/
-    git clone https://github.com/keinohguchi/ansible-modules-core.git core
-    git clone https://github.com/ansible/ansible-modules-extras.git extras
-    cd ../../../
-    make install
-    cd ..
+    # install ansible
+    pip install ansible
     # clone the code to run the tests
     git clone https://github.com/nshinde5486/ansible-openswitch-tests.git
