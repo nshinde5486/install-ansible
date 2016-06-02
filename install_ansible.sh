@@ -14,8 +14,8 @@ if [ "x$KITCHEN_LOG" = "xDEBUG" -o "x$OMNIBUS_ANSIBLE_LOG" = "xDEBUG" ]; then
 fi
 
 if [ ! $(which ansible-playbook) ]; then
-  if [ -f /etc/centos-release ] || [ -f /etc/redhat-release ] || [ -f /etc/oracle-release ] || [ -f /etc/system-release ]  then
-
+  if [ -f /etc/centos-release ] || [ -f /etc/redhat-release ] || [ -f /etc/oracle-release ] || [ -f /etc/system-release ]
+  then
     export HTTP_PROXY=http://web-proxy.rose.hpecorp.net:8080
     export HTTPS_PROXY=http://web-proxy.rose.hpecorp.net:8088
 
@@ -39,7 +39,10 @@ if [ ! $(which ansible-playbook) ]; then
 
     yum -y install bzip2 file findutils git gzip hg svn sudo tar which unzip xz zip libselinux-python
     [ -n "$(yum search procps-ng)" ] && yum -y install procps-ng || yum -y install procps
-  elif [ -f /etc/debian_version ] || [ grep -qi ubuntu /etc/lsb-release ] || grep -qi ubuntu /etc/os-release; then
+  fi
+
+  if [ -f /etc/debian_version ] || [ grep -qi ubuntu /etc/lsb-release ] || [grep -qi ubuntu /etc/os-release]
+  then
     export http_proxy=http://web-proxy.rose.hpecorp.net:8080
     export https_proxy=http://web-proxy.rose.hpecorp.net:8088
 
@@ -67,11 +70,6 @@ if [ ! $(which ansible-playbook) ]; then
 
     # Install Ansible module dependencies
     apt-get install -y bzip2 file findutils git gzip mercurial procps subversion sudo tar debianutils unzip xz-utils zip python-selinux
-
-  else
-    echo 'WARN: Could not detect distro or distro unsupported'
-    echo 'WARN: Trying to install ansible via pip without some dependencies'
-    echo 'WARN: Not all functionality of ansible may be available'
   fi
 
   mkdir /etc/ansible/
@@ -79,20 +77,9 @@ if [ ! $(which ansible-playbook) ]; then
 
   # source install to get latest ansible
   git clone https://github.com/ansible/ansible.git --recursive --branch stable-2.1
-  sudo make install
+  make install
   # clone the code to run the tests
   git clone https://github.com/nshinde5486/ansible-openswitch-tests.git
 
-  if [ -f /etc/centos-release ] || [ -f /etc/redhat-release ] || [ -f /etc/oracle-release ] || [ -f /etc/system-release ] || grep -q 'Amazon Linux' /etc/system-release; then
-    # Fix for pycrypto pip / yum issue
-    # https://github.com/ansible/ansible/issues/276
-    if  ansible --version 2>&1  | grep -q "AttributeError: 'module' object has no attribute 'HAVE_DECL_MPZ_POWM_SEC'" ; then
-      echo 'WARN: Re-installing python-crypto package to workaround ansible/ansible#276'
-      echo 'WARN: https://github.com/ansible/ansible/issues/276'
-      pip uninstall -y pycrypto
-      yum erase -y python-crypto
-      yum install -y python-crypto python-paramiko
-    fi
-  fi
 fi
 
