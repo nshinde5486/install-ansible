@@ -75,9 +75,8 @@ if [ ! $(which ansible-playbook) ]; then
   mkdir /etc/ansible/
   echo -e '[local]\nlocalhost\n' > /etc/ansible/hosts
 
-  # source install to get latest ansible
-  git clone https://github.com/ansible/ansible.git --recursive --branch stable-2.1
-  make install
+  # Install ansible
+  pip install ansible
   # clone the code to run the tests
   git clone https://github.com/nshinde5486/ansible-openswitch-tests.git
 
